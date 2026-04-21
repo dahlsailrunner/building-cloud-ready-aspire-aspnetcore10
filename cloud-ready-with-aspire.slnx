@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path="aspire.config.json" />
+    <File Path="Directory.Packages.props" />
+    <File Path="readme.md" />
+  </Folder>
+  <Project Path="CarvedRock.Api/CarvedRock.Api.csproj" />
+  <Project Path="CarvedRock.Core/CarvedRock.Core.csproj" />
+  <Project Path="CarvedRock.Data/CarvedRock.Data.csproj" />
+  <Project Path="CarvedRock.Domain/CarvedRock.Domain.csproj" />
+</Solution>
