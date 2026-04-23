@@ -58,15 +58,124 @@ docker rm <container id>
 
 ### Adding Aspire App Host and Postgres Hosting Integration
 
-See next release!
+Use the .NET templates for an Aspire AppHost to start.
+
+```bash
+dotnet new install Aspire.ProjectTemplates # if you don't already have them
+dotnet new aspire-apphost -o CarvedRock.AppHost
+```
+
+Once you've done that, you can add a project reference in the AppHost project
+to the `CarvedRock.Api` project.
+
+Then you can add the API to the AppHost (`AppHost.cs`):
+
+```csharp
+builder.AddProject<Projects.CarvedRock_Api>("api");
+```
+
+**NOTE:** This will not work without either running the Postgres Docker container,
+or (better!) keep going and add the PostgreSQL hosting integration.
+
+In the AppHost directory:
+
+```bash
+dotnet new add package Aspire.Hosting.PostgreSQL
+```
+
+Or use the Aspire VS Code extension and choose the `Aspire: Add an integration`
+command from the command pallete and search for postgres, then add
+`Aspire.Hosting.PostgreSQL`.
+
+Then update `AppHost.cs` to have these lines:
+
+```csharp
+var db = builder.AddPostgres("db").AddDatabase("CarvedRockPostgres");
+
+builder.AddProject<Projects.CarvedRock_Api>("api")
+    .WithReference(db)
+    .WaitFor(db);
+```
+
+Finally add a `.vscode/launch.json` file that looks like this to the
+root folder:
+
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "aspire",
+            "request": "launch",
+            "name": "Aspire: Launch default AppHost",
+            "program": ""
+        }
+    ]
+}
+```
+
+Then run it!  A Postgres database should start up, and then
+the API should start.  Then you can try the `GET /product` route and
+it should work.
 
 ### Adding ServiceDefaults
 
-See next release!
+From the root folder:
+
+```bash
+dotnet new aspire-servicedefaults -o CarvedRock.ServiceDefaults
+```
+
+Add a project reference in the API to the new CarvedRock.ServiceDefaults project.
+
+Add the following lines to Program.cs of the API:
+
+```csharp
+builder.AddServiceDefaults(); // after var builder = WebApplication.CreateBuilder(args);
+
+//...
+
+app.MapDefaultEndpoints(); // after var app = builder.Build();
+
+```
+
+Run the app again, and now you get Structured Logs, Traces, and Metrics in the
+Aspire Dashboard!
 
 ### Adding Postgres Client Integration
 
-See next release!
+In the API directory:
+
+```bash
+dotnet add package Aspire.Npgsql.EntityFrameworkCore.PostgreSQL
+```
+
+Add the same reference to in the CarvedRock.Data project, and the following
+references can be removed:
+
+```xml
+<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1"/>
+<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.6" />
+<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.6" />
+```
+
+You may also need to update the version number of the
+`Microsoft.EntityFrameworkCore.Design` package.
+
+In `Program.cs` of the API, comment out the existing addition of the `LocalContext`
+and replace it as shown below:
+
+```csharp
+// var cstr = builder.Configuration.GetConnectionString("CarvedRockPostgres");
+// builder.Services.AddDbContext<LocalContext>(options =>
+//      options.UseNpgsql(cstr));
+
+builder.AddNpgsqlDbContext<LocalContext>("CarvedRockPostgres");
+```
+
+Run the project again, you should see trace information that includes
+database activity in the Traces on API calls, and you should also see
+Npgsql metrics in the Metrics tab of the Dashboard!
 
 ## Features
 

@@ -4,13 +4,14 @@ using CarvedRock.Data;
 using CarvedRock.Domain;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddServiceDefaults();
 
 builder.Services.AddValidatorsFromAssemblyContaining<NewProductValidator>();
 builder.Services.AddProblemDetails(opts => opts.CustomizeProblemDetails = CustomizeProblemDetails);
@@ -39,18 +40,22 @@ var oauthScopes = new Dictionary<string, string>
     { "email", "User email address" }
 };
 
-builder.Services.AddOpenApiWithAuth(builder.Configuration.GetValue<string>("Auth:Authority")!, 
-    oauthScopes); 
+builder.Services.AddOpenApiWithAuth(builder.Configuration.GetValue<string>("Auth:Authority")!,
+    oauthScopes);
 
 builder.Services.AddScoped<IProductLogic, ProductLogic>();
 
-var cstr = builder.Configuration.GetConnectionString("CarvedRockPostgres");
-builder.Services.AddDbContext<LocalContext>(options =>
-     options.UseNpgsql(cstr));
+// var cstr = builder.Configuration.GetConnectionString("CarvedRockPostgres");
+// builder.Services.AddDbContext<LocalContext>(options =>
+//      options.UseNpgsql(cstr));
+
+builder.AddNpgsqlDbContext<LocalContext>("CarvedRockPostgres");
 
 builder.Services.AddScoped<ICarvedRockRepository, CarvedRockRepository>();
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 app.UseExceptionHandler();
 

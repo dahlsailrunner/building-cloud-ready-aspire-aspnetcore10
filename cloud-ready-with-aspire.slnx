@@ -4,7 +4,9 @@
     <File Path="readme.md" />
   </Folder>
   <Project Path="CarvedRock.Api/CarvedRock.Api.csproj" />
+  <Project Path="CarvedRock.AppHost/CarvedRock.AppHost.csproj" />
   <Project Path="CarvedRock.Core/CarvedRock.Core.csproj" />
   <Project Path="CarvedRock.Data/CarvedRock.Data.csproj" />
   <Project Path="CarvedRock.Domain/CarvedRock.Domain.csproj" />
+  <Project Path="CarvedRock.ServiceDefaults/CarvedRock.ServiceDefaults.csproj" />
 </Solution>
