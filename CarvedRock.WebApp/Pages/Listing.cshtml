@@ -1,0 +1,172 @@
+﻿@page
+@using Microsoft.AspNetCore.Authorization
+@attribute [AllowAnonymous]
+@model CarvedRock.WebApp.Pages.ListingModel
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script type="text/javascript">
+    function addItemToCart(productIdToAdd) {
+        const cookieString = getCookie("carvedrock-cart");
+        let data = cookieString === "" ? [] : JSON.parse(cookieString);
+        const item = data.find(n => n.id === productIdToAdd);
+        if (!item) data.push({ id: productIdToAdd, quantity: 1 });
+        else item.quantity += 1;
+        setCookie("carvedrock-cart", encodeURIComponent(JSON.stringify(data)));
+        setCartCount();
+    }
+    function setCookie(cname, cvalue) {
+        document.cookie = cname + "=" + cvalue + ";path=/;SameSite=Lax";
+    }
+
+    let sseSource = null;
+
+    function normalizeStreamChunk(raw) {
+        // pretty clumsy way of this rendering
+        raw = raw.replaceAll(/[\[",\]]/g, '');
+        raw = raw.replaceAll('\\n', '\n')
+        return raw;
+    }
+
+    function startChatStream() {
+        const input = document.getElementById("chatInput");
+        const msg = input.value.trim();
+        if (!msg) return;
+
+        appendMessage("user", msg);
+        input.value = "";
+        stopChatStream(); // ensure previous closed
+
+        const url = `/Listing?handler=Chat&message=${encodeURIComponent(msg)}`;
+        sseSource = new EventSource(url);
+
+        let buffer = "";
+        let assistantDiv = appendMessage("assistant", "_Thinking..._");
+
+        sseSource.onmessage = (e) => {
+            const delta = normalizeStreamChunk(e.data);
+
+            // Drop a leading empty token if buffer is empty
+            if (buffer.length === 0 && delta.trim().length === 0) return;
+
+            buffer += delta;
+            assistantDiv.querySelector(".chat-text").innerHTML = marked.parse(buffer);
+            scrollChat();
+        };
+
+        sseSource.addEventListener("end", () => {
+            stopChatStream();
+        });
+
+        sseSource.onerror = () => {
+            stopChatStream();
+        };
+    }
+
+    function stopChatStream() {
+        if (sseSource) {
+            sseSource.close();
+            sseSource = null;
+        }
+    }
+
+    function appendMessage(role, markdown) {
+        const container = document.getElementById("chatMessages");
+        const wrapper = document.createElement("div");
+        wrapper.className = "chat-message mb-3";
+        wrapper.innerHTML = `
+          <div class="d-flex">
+            <div class="flex-shrink-0">
+              <div class="${role === 'user' ? 'bg-primary' : 'bg-secondary'} rounded-circle d-flex align-items-center justify-content-center" style="width:32px;height:32px;">
+                <small class="text-white">${role === 'user' ? 'You' : 'CR'}</small>
+              </div>
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <div class="bg-white p-2 rounded shadow-sm">
+                <small class="text-muted">${role === 'user' ? 'You' : 'Carved Rock Recommendations'}</small>
+                <div class="chat-text">${marked.parse(markdown)}</div>
+              </div>
+              <small class="text-muted">${new Date().toLocaleTimeString()}</small>
+            </div>
+          </div>`;
+        container.appendChild(wrapper);
+        scrollChat();
+        return wrapper;
+    }
+
+    function scrollChat() {
+        const container = document.getElementById("chatMessages");
+        container.scrollTop = container.scrollHeight;
+    }
+</script>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8 col-md-7">
+            <h1>@Model.CategoryName</h1>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th class="d-flex justify-content-center">Description</th>
+                    <th>Price</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var product in Model.Products)
+                {
+                    <tr>
+                        <td>
+                            <img src="@product.ImgUrl" alt="@product.Name" height="100" width="100" /><br />
+                            @Html.DisplayFor(m => product.Name)
+                        </td>
+                        <td>@Html.DisplayFor(m => product.Description)</td>
+                        <td>@Html.DisplayFor(m => product.Price)</td>
+                        <td>
+                            <button type="button" class="btn btn-warning" onclick="addItemToCart(@product.Id)">Add to Cart</button>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-lg-4 col-md-5">
+            <div class="card h-100" style="max-height:600px;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-comments"></i> Recommendation Helper</h5>
+                </div>
+                <div class="card-body d-flex flex-column p-0">
+                    <div id="chatMessages" class="flex-grow-1 p-3" style="overflow-y:auto;max-height:400px;background:#f8f9fa;">
+                        <div class="chat-message mb-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" style="width:32px;height:32px;">
+                                        <small class="text-white">CR</small>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <div class="bg-white p-2 rounded shadow-sm">
+                                        <small class="text-muted">Carved Rock Recommendations</small>
+                                        <div class="chat-text">Hi! Tell me what you're looking for and I'll recommend up to 3 products.</div>
+                                    </div>
+                                    <small class="text-muted">Just now</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-top p-3">
+                        <div class="input-group">
+                            <input id="chatInput" type="text" class="form-control" placeholder="Describe your activity or gear needs...">
+                            <button class="btn btn-primary" type="button" onclick="startChatStream()">
+                                <i class="fas fa-paper-plane"></i> Send
+                            </button>
+                            <button class="btn btn-outline-secondary" type="button" onclick="stopChatStream()">Stop</button>
+                        </div>
+                        <small class="text-muted d-block mt-1">Streaming via Server-Sent Events. Markdown supported.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,28 @@
+﻿@page
+@model ErrorModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<h1 class="text-danger">Error.</h1>
+<h2 class="text-danger">An error occurred while processing your request.</h2>
+
+@if (Model.ShowDetails)
+{
+    <p>
+        <strong>Log Trace ID:</strong>
+        @if (Model.IsDevelopment)
+        {
+	        <code><a href="@($"https://localhost:17189/structuredlogs?filters=log.traceid%3Aequals%3A{Model.LogTraceId}")" target="_blank">@Model.LogTraceId</a></code>
+        }
+        else
+        {
+            <code>@Model.LogTraceId</code>
+        }
+        <br />
+        <br />
+        <strong>HTTP TraceId:</strong> <code>@Model.TraceId</code>
+        <br />
+        <strong>Activity.Id:</strong> <code>@Model.CurrentActivity?.Id</code>
+    </p>
+}
