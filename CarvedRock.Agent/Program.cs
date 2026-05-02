@@ -1,8 +1,9 @@
 using CarvedRock.Agent;
 using CarvedRock.Core;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.AI;
 using Microsoft.IdentityModel.Tokens;
+using OpenAI;
 using System.Diagnostics;
 using Scalar.AspNetCore;
 using System.IdentityModel.Tokens.Jwt;
@@ -11,21 +12,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddProblemDetails(opts => opts.CustomizeProblemDetails = CustomizeProblemDetails);
 
-// package: Aspire.Azure.AI.OpenAI
-// builder.AddAzureOpenAIClient("kyt-AzureOpenAI", configureSettings: settings =>
-// {
-//     settings.EnableSensitiveTelemetryData = true;
-//     settings.Endpoint = new Uri(builder.Configuration.GetValue<string>("AIConnection:Endpoint")!);
-//     settings.Key = builder.Configuration.GetValue<string>("AIConnection:Key")!;
-// }).AddChatClient(builder.Configuration.GetValue<string>("AIConnection:Deployment")!);
-
 // package: Aspire.OpenAI
-// Then add your API key for OpenAI to user secrets for the AIConnection:OpenAIKey value
-builder.AddOpenAIClient("kyt-OpenAI", configureSettings: settings =>
-{
-    settings.EnableSensitiveTelemetryData = true;
-    settings.Key = builder.Configuration.GetValue<string>("AIConnection:OpenAIKey");
-}).AddChatClient(builder.Configuration.GetValue<string>("AIConnection:OpenAIModel"));
+// User secrets for the AIConnection:OpenAIKey value
+var openAiKey = builder.Configuration.GetValue<string>("AIConnection:OpenAIKey")!;
+
+builder.Services
+    .AddChatClient(new OpenAIClient(openAiKey)
+    .GetChatClient(builder.Configuration.GetValue<string>("AIConnection:OpenAIModel")!)
+    .AsIChatClient());
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<Agent>();

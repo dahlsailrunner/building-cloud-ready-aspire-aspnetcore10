@@ -17,6 +17,7 @@ public class Agent(IChatClient chatClient,
         [EnumeratorCancellation] CancellationToken cxl)
     {
         logger.LogInformation("Got into the Agent method.");
+    
         var mcpClient = await McpClientHelper.GetMcpClient(config, httpCtxAccessor, cxl);
 
         var tools = await mcpClient.ListToolsAsync(cancellationToken: cxl);
