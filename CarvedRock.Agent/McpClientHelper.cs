@@ -52,9 +52,11 @@ public static class McpClientHelper
 
     private static string GetMcpServerUrl(IConfiguration config)
     {
-        return config.GetValue<string>("Services:mcp:https:0") // service discovery setup from Aspire
-            ?? config.GetValue<string>("McpServer")            // production / testing deployments config
-            ?? "http://localhost:5555";                        // not using 5241 to prove above works
+        return "https://mcp";
+
+        // return config.GetValue<string>("Services:mcp:https:0") // service discovery setup from Aspire
+        //     ?? config.GetValue<string>("McpServer")            // production / testing deployments config
+        //     ?? "http://localhost:5555";                        // not using 5241 to prove above works
     }
 
     private static async Task<string> GetAccessTokenFromHttpContext(IHttpContextAccessor httpCtxAccessor)

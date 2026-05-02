@@ -61,19 +61,15 @@ builder.Services.AddMcpServer()
     .WithHttpTransport(options =>
     {
         options.Stateless = true; // important for scaling
-        //options.ConfigureSessionOptions = AuthHelper.AuthorizeToolsForUser;
     })
     .WithPromptsFromAssembly()
-    .WithToolsFromAssembly() // just get everything registered, then use authz attributes to filter
-                             //.WithTools<CarvedRockTools>() 
-                             //.WithTools<AdminTools>()
-                             // Authorization Filter info: https://modelcontextprotocol.github.io/csharp-sdk/concepts/filters.html#built-in-authorization-filters
+    .WithToolsFromAssembly()
     .AddAuthorizationFilters();  // Add support for [Authorize] and [AllowAnonymous]
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<TokenForwarder>();
 builder.Services.AddHttpClient("CarvedRockApi",
-        client => client.BaseAddress = new("https://api"))
+        client => client.BaseAddress = new("https://localhost:7213"))
     .AddHttpMessageHandler<TokenForwarder>(); ;
 
 var app = builder.Build();
