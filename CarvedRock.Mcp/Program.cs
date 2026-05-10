@@ -8,6 +8,9 @@ using ModelContextProtocol.Authentication;
 using System.IdentityModel.Tokens.Jwt;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddServiceDefaults();
+
 var authServer = builder.Configuration.GetValue<string>("AuthServer")!;
 var mcpServerUrl = builder.Configuration.GetValue<string>("McpServerUrl")!;
 
@@ -69,10 +72,12 @@ builder.Services.AddMcpServer()
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<TokenForwarder>();
 builder.Services.AddHttpClient("CarvedRockApi",
-        client => client.BaseAddress = new("https://localhost:7213"))
+        client => client.BaseAddress = new("https://api"))
     .AddHttpMessageHandler<TokenForwarder>(); ;
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 if (app.Environment.IsDevelopment())
 {

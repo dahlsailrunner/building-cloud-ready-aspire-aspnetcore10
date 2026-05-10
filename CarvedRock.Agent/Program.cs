@@ -10,16 +10,23 @@ using System.IdentityModel.Tokens.Jwt;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 builder.Services.AddProblemDetails(opts => opts.CustomizeProblemDetails = CustomizeProblemDetails);
 
 // package: Aspire.OpenAI
 // User secrets for the AIConnection:OpenAIKey value
-var openAiKey = builder.Configuration.GetValue<string>("AIConnection:OpenAIKey")!;
+// var openAiKey = builder.Configuration.GetValue<string>("AIConnection:OpenAIKey")!;
+// builder.Services
+//     .AddChatClient(new OpenAIClient(openAiKey)
+//     .GetChatClient(builder.Configuration.GetValue<string>("AIConnection:OpenAIModel")!)
+//     .AsIChatClient());
 
-builder.Services
-    .AddChatClient(new OpenAIClient(openAiKey)
-    .GetChatClient(builder.Configuration.GetValue<string>("AIConnection:OpenAIModel")!)
-    .AsIChatClient());
+builder.AddOpenAIClient("kyt-OpenAI", configureSettings: settings =>
+{
+    settings.EnableSensitiveTelemetryData = true;
+    settings.Key = builder.Configuration.GetValue<string>("AIConnection:OpenAIKey");
+}).AddChatClient(builder.Configuration.GetValue<string>("AIConnection:OpenAIModel"));
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<Agent>();
@@ -52,6 +59,8 @@ builder.Services.AddOpenApiWithAuth(builder.Configuration.GetValue<string>("Auth
 builder.Services.AddTransient<IClaimsTransformation, AdminClaimsTransformation>();
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 app.UseExceptionHandler();
 

@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CarvedRock.Core\CarvedRock.Core.csproj" />
+    <ProjectReference Include="..\CarvedRock.ServiceDefaults\CarvedRock.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>

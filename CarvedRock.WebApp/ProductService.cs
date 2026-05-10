@@ -27,7 +27,11 @@ public class ProductService : IProductService
         IHttpContextAccessor httpCtxAccessor, ILogger<ProductService> logger)
     {
         //client.BaseAddress = new Uri(config.GetValue<string>("CarvedRock:ApiBaseUrl")!);
-        client.BaseAddress = new Uri("https+http://api");
+        //client.BaseAddress = new Uri("https+http://api");
+        client.BaseAddress = new Uri(
+            config.GetValue<string>("CarvedRock:ApiBaseUrl") ?? "https://api"
+        );
+        
         Client = client;
         _httpCtxAccessor = httpCtxAccessor;
         this.logger = logger;

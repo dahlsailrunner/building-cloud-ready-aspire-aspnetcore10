@@ -8,6 +8,8 @@ using System.IdentityModel.Tokens.Jwt;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 var authority = builder.Configuration.GetValue<string>("Auth:Authority");
 
 JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
@@ -49,10 +51,13 @@ builder.Services.AddOpenIdConnectAccessTokenManagement();
 builder.Services.AddUserAccessTokenHttpClient("AI",
        configureClient: client => client.BaseAddress = new("https://agent"));
 
+// https://aspire.dev/integrations/custom-integrations/client-integrations/
 builder.AddMailKitClient("smtp");
 builder.Services.AddScoped<IEmailSender, EmailService>();
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 app.UseExceptionHandler("/Error");
 

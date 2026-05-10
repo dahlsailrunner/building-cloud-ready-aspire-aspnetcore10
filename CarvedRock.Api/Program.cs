@@ -88,6 +88,12 @@ static void SetupDevelopment(WebApplication app, Dictionary<string, string> oaut
             flow.Pkce = Pkce.Sha256;
             flow.SelectedScopes = [.. oauthScopes.Keys];
         }));
+
+    app.MapPost("/internal/reset-data", (LocalContext db) =>
+    {
+        db.MigrateAndCreateData();
+        return Results.NoContent();
+    });
 }
 
 static void CustomizeProblemDetails(ProblemDetailsContext context)

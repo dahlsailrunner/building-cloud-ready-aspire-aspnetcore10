@@ -9,11 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CarvedRock.Agent\CarvedRock.Agent.csproj" />
     <ProjectReference Include="..\CarvedRock.Api\CarvedRock.Api.csproj" />
+    <ProjectReference Include="..\CarvedRock.Mcp\CarvedRock.Mcp.csproj" />
+    <ProjectReference Include="..\CarvedRock.WebApp\CarvedRock.WebApp.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.2.4" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.MailPit" Version="13.2.1-beta.532" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.McpInspector" Version="13.2.1-beta.532" />
   </ItemGroup>
 
 </Project>
