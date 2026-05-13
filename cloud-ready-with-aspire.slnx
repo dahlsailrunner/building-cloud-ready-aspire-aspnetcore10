@@ -3,6 +3,9 @@
     <File Path=".gitignore" />
     <File Path="readme.md" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CarvedRock.IntegrationTests/CarvedRock.IntegrationTests.csproj" />
+  </Folder>
   <Project Path="CarvedRock.Agent/CarvedRock.Agent.csproj" />
   <Project Path="CarvedRock.Api/CarvedRock.Api.csproj" />
   <Project Path="CarvedRock.AppHost/CarvedRock.AppHost.csproj" />
