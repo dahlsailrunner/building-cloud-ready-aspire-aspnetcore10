@@ -6,19 +6,32 @@ namespace CarvedRock.Core;
 public class AdminClaimsTransformation : IClaimsTransformation
 {
     public Task<ClaimsPrincipal> TransformAsync(ClaimsPrincipal principal)
-    {        
-        var emailClaim = principal.Claims.FirstOrDefault(c => 
-            c.Type == ClaimTypes.Email || 
+    {
+        var emailClaim = principal.Claims.FirstOrDefault(c =>
+            c.Type == ClaimTypes.Email ||
             c.Type == "email");
-            
+
         if (emailClaim != null &&
             emailClaim.Value.Split('@')[0].Equals("bobsmith", StringComparison.OrdinalIgnoreCase))
         {
             var clone = principal.Clone();
             var newIdentity = (ClaimsIdentity)clone.Identity!;
-            
+
             newIdentity.AddClaim(new Claim(ClaimTypes.Role, "admin"));
-            
+
+            return Task.FromResult(clone);
+        }
+
+        var clientidClaim = principal.Claims.FirstOrDefault(c =>
+            c.Type == "client_id");
+
+        if (clientidClaim != null && clientidClaim.Value == "m2m.short")
+        {
+            var clone = principal.Clone();
+            var newIdentity = (ClaimsIdentity)clone.Identity!;
+
+            newIdentity.AddClaim(new Claim(ClaimTypes.Role, "admin"));
+
             return Task.FromResult(clone);
         }
 
