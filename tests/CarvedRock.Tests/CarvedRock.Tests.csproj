@@ -16,6 +16,7 @@
     </PackageReference>
     <PackageReference Include="Duende.IdentityModel" Version="8.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />
+    <PackageReference Include="Microsoft.Playwright.Xunit.v3" Version="1.59.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -33,7 +34,7 @@
     <Using Include="Aspire.Hosting.ApplicationModel" />
     <Using Include="Aspire.Hosting.Testing" />
     <Using Include="Xunit" />
-    <Using Include="CarvedRock.IntegrationTests.Utils" />
+    <Using Include="CarvedRock.Tests.Utils" />
   </ItemGroup>
 
 </Project>

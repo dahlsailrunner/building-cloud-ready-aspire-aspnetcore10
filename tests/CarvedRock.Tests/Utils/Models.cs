@@ -1,4 +1,4 @@
-namespace CarvedRock.IntegrationTests.Utils;
+namespace CarvedRock.Tests.Utils;
 
 public record OperationResult(string Status, string? Message = null);
 

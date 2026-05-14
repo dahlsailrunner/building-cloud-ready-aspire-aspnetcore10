@@ -2,7 +2,7 @@ using System.Text.Json;
 using ModelContextProtocol;
 using ModelContextProtocol.Protocol;
 
-namespace CarvedRock.IntegrationTests;
+namespace CarvedRock.Tests;
 
 [Collection("Integration test collection")]
 public class McpServerTests(AppFixture fixture)
@@ -12,7 +12,7 @@ public class McpServerTests(AppFixture fixture)
     [InlineData("m2m.short", "secret")]
     public async Task GetToolsIncludesGetProducts(string user, string pwd)
     {
-        var mcpClient = await fixture.GetMcpClient(user, pwd, 
+        var mcpClient = await fixture.GetMcpClient(user, pwd,
                             TestContext.Current.CancellationToken);
 
         var tools = await mcpClient.ListToolsAsync(
@@ -26,7 +26,7 @@ public class McpServerTests(AppFixture fixture)
     [Fact]
     public async Task CallGetProductsToolReturnsProducts()
     {
-        var mcpClient = await fixture.GetMcpClient("m2m", "secret", 
+        var mcpClient = await fixture.GetMcpClient("m2m", "secret",
                             TestContext.Current.CancellationToken);
 
         //Act
@@ -50,7 +50,7 @@ public class McpServerTests(AppFixture fixture)
     [Fact]
     public async Task ListToolsDoesNotHaveAdminToolsForNormalUser()
     {
-        var mcpClient = await fixture.GetMcpClient("m2m", "secret", 
+        var mcpClient = await fixture.GetMcpClient("m2m", "secret",
                         TestContext.Current.CancellationToken);
 
         var tools = await mcpClient.ListToolsAsync(
@@ -69,7 +69,7 @@ public class McpServerTests(AppFixture fixture)
     [Fact]
     public async Task ListToolsHasAdminToolsForAdmin()
     {
-        var mcpClient = await fixture.GetMcpClient("m2m.short", "secret", 
+        var mcpClient = await fixture.GetMcpClient("m2m.short", "secret",
                             TestContext.Current.CancellationToken);
 
         var tools = await mcpClient.ListToolsAsync(
@@ -88,7 +88,7 @@ public class McpServerTests(AppFixture fixture)
     [Fact]
     public async Task DeleteProductWorksForAdmin()
     {
-        var mcpClient = await fixture.GetMcpClient("m2m.short", "secret", 
+        var mcpClient = await fixture.GetMcpClient("m2m.short", "secret",
                             TestContext.Current.CancellationToken);
 
         var response = await mcpClient.CallToolAsync("delete_product",
@@ -112,7 +112,7 @@ public class McpServerTests(AppFixture fixture)
     [Fact]
     public async Task DeleteProductDoesNotWorkForNonAdmin()
     {
-        var mcpClient = await fixture.GetMcpClient("m2m", "secret", 
+        var mcpClient = await fixture.GetMcpClient("m2m", "secret",
                 TestContext.Current.CancellationToken);
 
         try

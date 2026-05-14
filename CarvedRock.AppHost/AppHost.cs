@@ -59,4 +59,9 @@ builder.AddMcpInspector("mcp-inspector")
     .WithUrlForEndpoint("client", u => u.DisplayText = "MCP Inspector")
     .WithUrlForEndpoint("server-proxy", u => u.DisplayLocation = UrlDisplayLocation.DetailsOnly);
 
+builder.AddParameter("adminUsername")
+    .WithDescription("Administrator username to be used in automated tests.");
+builder.AddParameter("adminPassword", secret: true)
+    .WithDescription("Administrator password to be used in automated tests.");
+
 builder.Build().Run();

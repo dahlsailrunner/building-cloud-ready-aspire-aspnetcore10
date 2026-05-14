@@ -1,11 +1,15 @@
 using System.Text.Json;
 using Aspire.Hosting;
+using Microsoft.Extensions.Configuration;
 using ModelContextProtocol.Client;
 
-namespace CarvedRock.IntegrationTests.Utils;
+namespace CarvedRock.Tests.Utils;
 
 public class AppFixture : IDisposable
 {
+    internal string? AdminUsername { get; set; }
+    internal string? AdminPassword { get; set; }
+
     private static readonly TimeSpan _defaultTimeout = TimeSpan.FromSeconds(60);
     public readonly JsonSerializerOptions JsonSerializerOptions = new()
     {
@@ -30,6 +34,9 @@ public class AppFixture : IDisposable
         {
             clientBuilder.AddStandardResilienceHandler();
         });
+
+        AdminUsername = appHost.Configuration.GetValue<string>("Parameters:adminUsername")!;
+        AdminPassword = appHost.Configuration.GetValue<string>("Parameters:adminPassword")!;
 
         App = await appHost
                 .BuildAsync(cancellationToken)

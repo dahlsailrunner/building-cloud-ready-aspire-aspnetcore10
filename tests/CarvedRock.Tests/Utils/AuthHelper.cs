@@ -1,6 +1,7 @@
 using Duende.IdentityModel.Client;
 
-namespace CarvedRock.IntegrationTests.Utils;
+namespace CarvedRock.Tests.Utils;
+
 public static class AuthHelper
 {
     public static async Task<string> GetClientCredsAccessTokenAsync(
@@ -31,7 +32,7 @@ public static class AuthHelper
 
     public static async Task<string> GetUserAccessTokenAsync(AppFixture fixture,
         string username, string password,
-        string scope = "openid profile email api", 
+        string scope = "openid profile email api",
         CancellationToken cancellationToken = default)
     {
         var idSrvRoot = fixture.App.GetEndpoint("idsrv", "https");
@@ -52,7 +53,7 @@ public static class AuthHelper
 
         if (response.IsError)
         {
-            throw new Exception($"Error retrieving access " + 
+            throw new Exception($"Error retrieving access " +
                     "token for user {username}: {response.Error}");
         }
 

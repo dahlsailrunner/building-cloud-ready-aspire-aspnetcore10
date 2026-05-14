@@ -1,6 +1,6 @@
 using System.Net.Http.Json;
 
-namespace CarvedRock.IntegrationTests;
+namespace CarvedRock.Tests;
 
 [Collection("Integration test collection")]
 public class ApiTests(AppFixture fixture)
