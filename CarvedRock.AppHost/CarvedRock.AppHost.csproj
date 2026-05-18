@@ -17,8 +17,8 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.3.3" />
-    <PackageReference Include="CommunityToolkit.Aspire.Hosting.MailPit" Version="13.2.1-beta.532" />
-    <PackageReference Include="CommunityToolkit.Aspire.Hosting.McpInspector" Version="13.2.1-beta.532" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.MailPit" Version="13.3.0" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.McpInspector" Version="13.3.0" />
   </ItemGroup>
 
 </Project>
