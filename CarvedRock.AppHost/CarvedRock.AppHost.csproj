@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.Kubernetes" Version="13.3.5-preview.1.26270.6" />
     <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.3.5" />
     <PackageReference Include="CommunityToolkit.Aspire.Hosting.MailPit" Version="13.3.0" />
     <PackageReference Include="CommunityToolkit.Aspire.Hosting.McpInspector" Version="13.3.0" />

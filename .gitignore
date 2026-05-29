@@ -4,3 +4,4 @@ obj/
 *.user
 *.lscache
 .idea/
+aspire-output/

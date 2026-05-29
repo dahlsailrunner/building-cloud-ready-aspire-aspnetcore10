@@ -2,6 +2,10 @@ using Microsoft.Extensions.Hosting;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+#pragma warning disable ASPIRECOMPUTE003
+var registry = builder.AddContainerRegistry("registry", "carvedrock.docker.com");
+builder.AddKubernetesEnvironment("cr-k8s").WithContainerRegistry(registry);
+
 var db = builder.AddPostgres("db")
     .WithUrlForEndpoint("tcp", u => u.DisplayLocation = UrlDisplayLocation.DetailsOnly)
     .AddDatabase("CarvedRockPostgres");
@@ -54,7 +58,8 @@ var webapp = builder.AddProject<Projects.CarvedRock_WebApp>("webapp")
     .WithReference(smtp)
     .WithReference(api)
     .WithReference(agent)
-    .WaitFor(api);
+    .WaitFor(api)
+    .WithExternalHttpEndpoints();
 
 builder.AddMcpInspector("mcp-inspector")
     .WithMcpServer(mcp, path: "")

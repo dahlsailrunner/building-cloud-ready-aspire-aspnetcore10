@@ -196,3 +196,21 @@ dotnet ef migrations add Initial -s ../CarvedRock.Api
 ```
 
 The application uses PostgreSQL.
+
+## Testing
+
+A testing project has been included that performs some simple tests.
+
+Some of the tests use Playwright, and for those you need to build
+the project and ensure the Playwright browsers are installed.
+
+Run the `playwright.ps1 install` script from the build output folder.
+
+## Deployment
+
+This application isn't really deployed anywhere, but some
+sample code has been added that enables publishing to kubernetes.
+
+If you run `aspire publish`, it will create a Helm chart in the
+`CarvedRock.AppHost/aspire-output` directory.  Feel free to create
+that and browse the content.
