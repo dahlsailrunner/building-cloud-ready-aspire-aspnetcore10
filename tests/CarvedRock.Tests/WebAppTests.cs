@@ -23,9 +23,16 @@ public class WebAppTests(AppFixture fixture) : PageTest
     [Fact]
     public async Task AddToCartWorks()
     {
+        // Cart is persisted per-user now, so start from a clean cart.
+        await DbTestHelper.ClearCartsAndOrdersAsync(fixture,
+            TestContext.Current.CancellationToken);
+
         var url = fixture.App.GetEndpoint("webapp", "https");
 
-        await Page.GotoAsync(url.AbsoluteUri);
+        // The Listing page now requires an authenticated user.
+        await PlaywrightHelpers.LoginAsync(Page, url,
+            PlaywrightHelpers.AliceUsername, PlaywrightHelpers.AlicePassword);
+
         await Page.GetByRole(AriaRole.Link, new() { Name = "Footwear" })
                     .ClickAsync();
 

@@ -6,11 +6,13 @@ using System.Text;
 namespace CarvedRock.WebApp.Pages;
 
 public partial class ListingModel(IProductService productService,
+    ICartService cartService,
     CarvedRockMetrics metrics,
     IHttpClientFactory httpClientFactory) : PageModel
 {
     public List<ProductModel> Products { get; set; } = [];
     public string CategoryName { get; set; } = "";
+    public string Category { get; set; } = "";
 
     public async Task OnGetAsync()
     {
@@ -18,6 +20,7 @@ public partial class ListingModel(IProductService productService,
         if (string.IsNullOrEmpty(cat))
             throw new Exception("failed");
 
+        Category = cat;
         Products = await productService.GetProductsAsync(cat);
         if (Products.Count != 0)
         {
@@ -26,6 +29,12 @@ public partial class ListingModel(IProductService productService,
         }
 
         metrics.ListingPageWasViewed();
+    }
+
+    public async Task<IActionResult> OnPostAddToCart(int productId, string cat)
+    {
+        await cartService.AddToCartAsync(productId);
+        return RedirectToPage("Listing", new { cat });
     }
 
     public async Task<IActionResult> OnGetChat(string message, CancellationToken cxl)

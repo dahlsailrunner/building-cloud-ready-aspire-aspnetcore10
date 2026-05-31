@@ -1,37 +1,18 @@
+using CarvedRock.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Text.Json;
 
 namespace CarvedRock.WebApp.Pages;
 
-public record CartItem(int Id, int Quantity, string Name, string Category, double Price, double Total);
-
 [ValidateAntiForgeryToken]
-public class CartModel(IProductService productService) : PageModel
+public class CartModel(ICartService cartService) : PageModel
 {
-    private readonly JsonSerializerOptions _jsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true
-    };
-
-    public List<CartItem> CartContents { get; set; } = [];
+    public List<CartItemModel> CartContents { get; set; } = [];
     public double CartTotal => CartContents.Sum(c => c.Total);
+
     public async Task OnGetAsync()
     {
-        var cookie = Request.Cookies["carvedrock-cart"];
-        if (string.IsNullOrEmpty(cookie)) return;
-
-        CartContents = JsonSerializer.Deserialize<List<CartItem>>(cookie, _jsonOptions)!;
-
-        var allProducts = await productService.GetProductsAsync();
-
-        CartContents = CartContents.Select(cartItem =>
-        {
-            var product = allProducts.FirstOrDefault(p => p.Id == cartItem.Id)!;
-
-            return new CartItem(cartItem.Id, cartItem.Quantity, product.Name, 
-                product.Category, product.Price, product.Price * cartItem.Quantity);                
-        }).ToList();       
+        CartContents = await cartService.GetCartAsync();
     }
 
     public IActionResult OnPostCheckout()
@@ -39,9 +20,9 @@ public class CartModel(IProductService productService) : PageModel
         return RedirectToPage("/Checkout");
     }
 
-    public IActionResult OnPostCancelOrder()
+    public async Task<IActionResult> OnPostCancelOrder()
     {
-        Response.Cookies.Delete("carvedrock-cart");
+        await cartService.ClearCartAsync();
         return RedirectToPage("/Index");
     }
 }

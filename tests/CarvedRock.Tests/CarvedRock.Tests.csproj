@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\CarvedRock.AppHost\CarvedRock.AppHost.csproj" />
+    <ProjectReference Include="..\..\CarvedRock.Data\CarvedRock.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>

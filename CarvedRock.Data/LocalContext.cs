@@ -9,6 +9,30 @@ namespace CarvedRock.Data;
 public class LocalContext(DbContextOptions<LocalContext> options) : DbContext(options)
 {
     public DbSet<Product> Products { get; set; } = null!;
+    public DbSet<CartItem> CartItems { get; set; } = null!;
+    public DbSet<Order> Orders { get; set; } = null!;
+    public DbSet<OrderDetail> OrderDetails { get; set; } = null!;
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<CartItem>(entity =>
+        {
+            entity.HasIndex(c => c.UserId);
+            // one row per product per user, enabling a simple upsert by (UserId, ProductId)
+            entity.HasIndex(c => new { c.UserId, c.ProductId }).IsUnique();
+        });
+
+        modelBuilder.Entity<Order>(entity =>
+        {
+            entity.HasIndex(o => o.UserId);
+            entity.HasMany(o => o.Details)
+                  .WithOne(d => d.Order)
+                  .HasForeignKey(d => d.OrderId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+    }
 
     [ExcludeFromCodeCoverage]
     public void MigrateAndCreateData()

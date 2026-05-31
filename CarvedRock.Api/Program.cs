@@ -44,6 +44,13 @@ builder.Services.AddOpenApiWithAuth(builder.Configuration.GetValue<string>("Auth
     oauthScopes);
 
 builder.Services.AddScoped<IProductLogic, ProductLogic>();
+builder.Services.AddScoped<ICartLogic, CartLogic>();
+builder.Services.AddScoped<IOrderLogic, OrderLogic>();
+
+// Order-confirmation email now lives in the API (moved out of the web app).
+// https://aspire.dev/integrations/custom-integrations/client-integrations/
+builder.AddMailKitClient("smtp");
+builder.Services.AddScoped<IOrderEmailSender, EmailService>();
 
 // var cstr = builder.Configuration.GetConnectionString("CarvedRockPostgres");
 // builder.Services.AddDbContext<LocalContext>(options =>

@@ -2,7 +2,6 @@ using CarvedRock.Core;
 using CarvedRock.WebApp;
 using Duende.AccessTokenManagement.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -46,14 +45,11 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddRazorPages();
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<IProductService, ProductService>();
+builder.Services.AddHttpClient<ICartService, CartService>();
 
 builder.Services.AddOpenIdConnectAccessTokenManagement();
 builder.Services.AddUserAccessTokenHttpClient("AI",
        configureClient: client => client.BaseAddress = new("https://agent"));
-
-// https://aspire.dev/integrations/custom-integrations/client-integrations/
-builder.AddMailKitClient("smtp");
-builder.Services.AddScoped<IEmailSender, EmailService>();
 
 var app = builder.Build();
 

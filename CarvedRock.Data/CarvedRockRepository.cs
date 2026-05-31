@@ -66,4 +66,55 @@ public class CarvedRockRepository(LocalContext ctx, ILogger<CarvedRockRepository
         ctx.Products.Remove(product);
         await ctx.SaveChangesAsync();
     }
+
+    public async Task<List<CartItem>> GetCartItemsAsync(string userId)
+    {
+        return await ctx.CartItems.Where(c => c.UserId == userId)
+            .OrderBy(c => c.Id)
+            .ToListAsync();
+    }
+
+    public async Task AddOrIncrementCartItemAsync(string userId, int productId, int quantity)
+    {
+        var existing = await ctx.CartItems
+            .FirstOrDefaultAsync(c => c.UserId == userId && c.ProductId == productId);
+
+        if (existing == null)
+        {
+            ctx.CartItems.Add(new CartItem
+            {
+                UserId = userId,
+                ProductId = productId,
+                Quantity = quantity
+            });
+        }
+        else
+        {
+            existing.Quantity += quantity;
+        }
+
+        await ctx.SaveChangesAsync();
+    }
+
+    public async Task ClearCartAsync(string userId)
+    {
+        var items = ctx.CartItems.Where(c => c.UserId == userId);
+        ctx.CartItems.RemoveRange(items);
+        await ctx.SaveChangesAsync();
+    }
+
+    public async Task<Order> CreateOrderAsync(Order order)
+    {
+        ctx.Orders.Add(order);
+        await ctx.SaveChangesAsync();
+        return order;
+    }
+
+    public async Task<List<Order>> GetOrdersForUserAsync(string userId)
+    {
+        return await ctx.Orders.Where(o => o.UserId == userId)
+            .Include(o => o.Details)
+            .OrderByDescending(o => o.OrderDate)
+            .ToListAsync();
+    }
 }

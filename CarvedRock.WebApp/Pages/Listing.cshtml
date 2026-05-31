@@ -1,23 +1,8 @@
 ﻿@page
-@using Microsoft.AspNetCore.Authorization
-@attribute [AllowAnonymous]
 @model CarvedRock.WebApp.Pages.ListingModel
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script type="text/javascript">
-    function addItemToCart(productIdToAdd) {
-        const cookieString = getCookie("carvedrock-cart");
-        let data = cookieString === "" ? [] : JSON.parse(cookieString);
-        const item = data.find(n => n.id === productIdToAdd);
-        if (!item) data.push({ id: productIdToAdd, quantity: 1 });
-        else item.quantity += 1;
-        setCookie("carvedrock-cart", encodeURIComponent(JSON.stringify(data)));
-        setCartCount();
-    }
-    function setCookie(cname, cvalue) {
-        document.cookie = cname + "=" + cvalue + ";path=/;SameSite=Lax";
-    }
-
     let sseSource = null;
 
     function normalizeStreamChunk(raw) {
@@ -122,7 +107,10 @@
                         <td>@Html.DisplayFor(m => product.Description)</td>
                         <td>@Html.DisplayFor(m => product.Price)</td>
                         <td>
-                            <button type="button" class="btn btn-warning" onclick="addItemToCart(@product.Id)">Add to Cart</button>
+                            <form method="post" asp-page-handler="AddToCart" asp-route-cat="@Model.Category">
+                                <input type="hidden" name="productId" value="@product.Id" />
+                                <button type="submit" class="btn btn-warning">Add to Cart</button>
+                            </form>
                         </td>
                     </tr>
                 }

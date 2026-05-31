@@ -7,6 +7,7 @@ var registry = builder.AddContainerRegistry("registry", "carvedrock.docker.com")
 builder.AddKubernetesEnvironment("cr-k8s").WithContainerRegistry(registry);
 
 var db = builder.AddPostgres("db")
+    .WithPgAdmin()
     .WithUrlForEndpoint("tcp", u => u.DisplayLocation = UrlDisplayLocation.DetailsOnly)
     .AddDatabase("CarvedRockPostgres");
 
@@ -19,6 +20,8 @@ var api = builder.AddProject<Projects.CarvedRock_Api>("api")
     .WithHttpHealthCheck("/alive")
     .WithReference(db)
     .WaitFor(db)
+    .WithReference(smtp)
+    .WaitFor(smtp)
     .WithHttpCommand(
         path: "/internal/reset-data",
         displayName: "Reset Data",
@@ -55,7 +58,6 @@ var agent = builder.AddProject<Projects.CarvedRock_Agent>("agent")
 var webapp = builder.AddProject<Projects.CarvedRock_WebApp>("webapp")
     .WithUrlForEndpoint("https", u => u.DisplayText = "Web App")
     .WithHttpHealthCheck("/alive")
-    .WithReference(smtp)
     .WithReference(api)
     .WithReference(agent)
     .WaitFor(api)

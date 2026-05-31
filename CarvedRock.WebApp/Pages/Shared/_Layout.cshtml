@@ -1,6 +1,14 @@
 ﻿@inject IConfiguration config
+@inject CarvedRock.WebApp.ICartService cartService
 @{
     var authority = config.GetValue<string>("Auth:Authority");
+
+    var cartCount = 0;
+    if (User.Identity?.IsAuthenticated ?? false)
+    {
+        try { cartCount = await cartService.GetCartItemCountAsync(); }
+        catch { /* cart unavailable (e.g. API not ready) - show 0 */ }
+    }
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -15,43 +23,6 @@
     <link href="/css/custom.css" rel="stylesheet">
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-
-    <script type="text/javascript">
-        function setCartCount(){
-            var cookieString = getCookie("carvedrock-cart");
-            var cartLink = document.getElementById("carvedrockcart");
-
-            if (cookieString == "") {                
-                cartLink.textContent = "Cart (0)";
-            } else {
-                var decodedCookieData = cookieString;
-                var cookieData = JSON.parse(decodedCookieData);
-                console.log(cookieData);
-                var totalItems = 0;
-                for (var product of cookieData) {
-                    console.log(product);
-                    totalItems += product.quantity;
-                }
-                cartLink.textContent = "Cart (" + totalItems + ")";
-            }
-        }
-        
-        function getCookie(cname) {
-            let name = cname + "=";
-            let decodedCookie = decodeURIComponent(document.cookie);
-            let ca = decodedCookie.split(';');
-            for (let i = 0; i < ca.length; i++) {
-                let c = ca[i];
-                while (c.charAt(0) == ' ') {
-                    c = c.substring(1);
-                }
-                if (c.indexOf(name) == 0) {
-                    return c.substring(name.length, c.length);
-                }
-            }
-            return "";
-        }
-    </script>
 </head>
 <body>
     <div class="crf">
@@ -79,7 +50,7 @@
                         <a class="btn btn-warning mx-1 px-3 py-2 fw-bold text-uppercase" href="/Listing?cat=kayak">Kayaks</a>
                         <a class="btn btn-warning mx-1 px-3 py-2 fw-bold text-uppercase" href="/Listing?cat=equip">Equipment</a>
                         <a class="btn btn-warning mx-1 px-3 py-2 fw-bold text-uppercase" href="/Listing?cat=badnews">Bad News</a>
-                        <a class="btn btn-warning mx-1 px-3 py-2 fw-bold text-uppercase" href="/Cart" id="carvedrockcart">Cart</a>
+                        <a class="btn btn-warning mx-1 px-3 py-2 fw-bold text-uppercase" href="/Cart" id="carvedrockcart">Cart (@cartCount)</a>
                         @if (User.IsInRole("admin"))
                         {
                             <a class="btn btn-warning mx-1 px-3 py-2 fw-bold text-uppercase" href="/Admin">Admin</a>
@@ -201,10 +172,5 @@
     </div>
 
     @await RenderSectionAsync("Scripts", required: false)
-    <script type="text/javascript">
-        (function () {
-            setCartCount();
-        })();
-    </script>
 </body>
 </html>
