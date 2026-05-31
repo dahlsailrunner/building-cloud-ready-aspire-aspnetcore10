@@ -20,6 +20,9 @@ public class OrderLogic(ICarvedRockRepository repo,
             throw new InvalidOperationException("Cannot place an order with an empty cart.");
         }
 
+        var products = await repo.GetProductsByIdsAsync(cartItems.Select(i => i.ProductId));
+        var productsById = products.ToDictionary(p => p.Id);
+
         var order = new Order
         {
             UserId = userId,
@@ -30,8 +33,7 @@ public class OrderLogic(ICarvedRockRepository repo,
 
         foreach (var item in cartItems)
         {
-            var product = await repo.GetProductByIdAsync(item.ProductId);
-            if (product == null) continue;
+            if (!productsById.TryGetValue(item.ProductId, out var product)) continue;
 
             order.Details.Add(new OrderDetail
             {

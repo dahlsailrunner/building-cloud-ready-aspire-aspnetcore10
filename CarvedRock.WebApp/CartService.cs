@@ -51,8 +51,8 @@ public class CartService : ICartService
 
     public async Task<int> GetCartItemCountAsync()
     {
-        var items = await GetCartAsync();
-        return items.Sum(i => i.Quantity);
+        await SetAuthorizationHeader();
+        return await Client.GetFromJsonAsync<int>("Cart/count");
     }
 
     public async Task AddToCartAsync(int productId, int quantity = 1)

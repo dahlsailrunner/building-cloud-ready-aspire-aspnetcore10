@@ -15,12 +15,13 @@ public class CartLogic(ICarvedRockRepository repo,
             new Dictionary<string, object> { ["userId"] = userId });
 
         var items = await repo.GetCartItemsAsync(userId);
+        var products = await repo.GetProductsByIdsAsync(items.Select(i => i.ProductId));
+        var productsById = products.ToDictionary(p => p.Id);
 
         var result = new List<CartItemModel>();
         foreach (var item in items)
         {
-            var product = await repo.GetProductByIdAsync(item.ProductId);
-            if (product == null) continue;
+            if (!productsById.TryGetValue(item.ProductId, out var product)) continue;
 
             result.Add(new CartItemModel
             {
@@ -33,6 +34,11 @@ public class CartLogic(ICarvedRockRepository repo,
             });
         }
         return result;
+    }
+
+    public async Task<int> GetCartItemCountAsync(string userId)
+    {
+        return await repo.GetCartItemCountAsync(userId);
     }
 
     public async Task AddToCartAsync(string userId, AddToCartModel item)

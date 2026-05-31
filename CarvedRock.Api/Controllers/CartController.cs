@@ -17,6 +17,12 @@ public class CartController(ICartLogic cartLogic,
         return await cartLogic.GetCartAsync(User.GetUserId());
     }
 
+    [HttpGet("count")]
+    public async Task<int> GetCount()
+    {
+        return await cartLogic.GetCartItemCountAsync(User.GetUserId());
+    }
+
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]

@@ -30,6 +30,19 @@ public class CarvedRockRepository(LocalContext ctx, ILogger<CarvedRockRepository
         return await ctx.Products.FindAsync(id);
     }
 
+    public async Task<List<Product>> GetProductsByIdsAsync(IEnumerable<int> ids)
+    {
+        var idList = ids.Distinct().ToList();
+        if (idList.Count == 0)
+        {
+            return [];
+        }
+
+        return await ctx.Products
+            .Where(p => idList.Contains(p.Id))
+            .ToListAsync();
+    }
+
     public Task<bool> IsProductNameUniqueAsync(string name)
     {
         return ctx.Products.AllAsync(p => p.Name != name);
@@ -74,6 +87,13 @@ public class CarvedRockRepository(LocalContext ctx, ILogger<CarvedRockRepository
             .ToListAsync();
     }
 
+    public async Task<int> GetCartItemCountAsync(string userId)
+    {
+        return await ctx.CartItems
+            .Where(c => c.UserId == userId)
+            .SumAsync(c => c.Quantity);
+    }
+
     public async Task AddOrIncrementCartItemAsync(string userId, int productId, int quantity)
     {
         var existing = await ctx.CartItems
@@ -98,9 +118,9 @@ public class CarvedRockRepository(LocalContext ctx, ILogger<CarvedRockRepository
 
     public async Task ClearCartAsync(string userId)
     {
-        var items = ctx.CartItems.Where(c => c.UserId == userId);
-        ctx.CartItems.RemoveRange(items);
-        await ctx.SaveChangesAsync();
+        await ctx.CartItems
+            .Where(c => c.UserId == userId)
+            .ExecuteDeleteAsync();
     }
 
     public async Task<Order> CreateOrderAsync(Order order)
