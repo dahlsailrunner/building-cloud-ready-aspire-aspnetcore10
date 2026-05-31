@@ -25,7 +25,7 @@ dotnet test --filter "FullyQualifiedName~ApiTests"                       # one c
 dotnet test --filter "FullyQualifiedName~ApiTests.GetAllProductsReturnsAllProducts"  # one test
 
 # EF Core migrations — run from the CarvedRock.Data folder, with the API as startup project
-dotnet ef migrations add <Name> -s ../CarvedRock.Api
+dotnet ef migrations add <Name> -s ../CarvedRock.Data
 
 # Publish a Helm chart for Kubernetes into CarvedRock.AppHost/aspire-output
 aspire publish

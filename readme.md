@@ -192,7 +192,7 @@ Npgsql metrics in the Metrics tab of the Dashboard!
 The `dotnet ef` tool is used to manage EF Core migrations.  The following command was used to create migrations (from the `CarvedRock.Data` folder).
 
 ```bash
-dotnet ef migrations add Initial -s ../CarvedRock.Api
+dotnet ef migrations add Initial -s ../CarvedRock.Data
 ```
 
 The application uses PostgreSQL.
