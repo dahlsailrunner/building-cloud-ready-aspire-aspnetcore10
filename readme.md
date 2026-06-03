@@ -258,7 +258,20 @@ The plan created in `docs/cart-order-persistence-plan.md` was created
 from the following prompt:
 
 ```txt
-Create a plan for the following: Update the cart functionality in the webapp to use the database via the api (will require a new table - with a key or index on the user id), and when an order is completed, add a record of it to the database as well (new order and details tables).  The email logic should also be moved into the api method used to place an order.  A migration should be created for the new tables, which can start empty.  To keep things simple, let's also update the Listing page to require an authenticated user. Tests should include adding items to the cart and making sure the database has those rows, and placing an order creates entries in the appropriate tables, and that an email has been sent (use the MailPit REST api to verify).
+Create a plan for the following: Update the cart
+functionality in the webapp to use the database via the
+api (will require a new table - with a key or index on
+the user id), and when an order is completed, add a
+record of it to the database as well (new order and
+details tables).  The email logic should also be moved
+into the api method used to place an order.  A migration
+should be created for the new tables, which can start
+empty.  To keep things simple, let's also update the
+Listing page to require an authenticated user. Tests
+should include adding items to the cart and making sure
+the database has those rows, and placing an order creates
+entries in the appropriate tables, and that an email has
+been sent (use the MailPit REST api to verify).
 ```
 
 Here are some other ideas for features that you could create plans for and
