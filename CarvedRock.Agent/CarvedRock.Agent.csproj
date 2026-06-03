@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.OpenAI" Version="13.3.5-preview.1.26270.6" />
-    <PackageReference Include="Microsoft.Agents.AI.OpenAI" Version="1.6.2" />
+    <PackageReference Include="Aspire.OpenAI" Version="13.4.0-preview.1.26281.18" />
+    <PackageReference Include="Microsoft.Agents.AI.OpenAI" Version="1.8.0" />
     <!-- <PackageReference Include="Microsoft.Extensions.AI.OpenAI" Version="10.5.1" /> -->
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.8" />
     <PackageReference Include="ModelContextProtocol" Version="1.3.0" />
